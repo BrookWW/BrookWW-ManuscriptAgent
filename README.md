@@ -1,5 +1,7 @@
 # ManuscriptAgent
 
+[![Tests](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml)
+
 Audit and revise mathematical LaTeX manuscripts through fresh, isolated Codex sessions. ManuscriptAgent supports repeated full-paper reviews and a model-planned segmented review, saving an editable source revision after every completed audit round.
 
 The bundled [mathematical manuscript skill](skill/mathematical-manuscript-agent/SKILL.md) handles mathematical reasoning, literature research, rewriting, and subagent review when useful. The Python runner handles dependency collection, session isolation, round scheduling, and delivery. Original manuscript files are preserved.
@@ -153,6 +155,10 @@ The best-effort multi-agent observer saves available session JSONL files and `ag
 The runner verifies orchestration and safe source delivery. Mathematical conclusions, reference accuracy, completeness of proofs, and adherence to editorial instructions still require human review.
 
 ## Development and validation
+
+The [Tests workflow](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml) runs on every push and pull request, and can also be started manually from the Actions tab. It uses macOS 15 and Python 3.12, enables real kernel-isolation tests, checks the executable launcher, and rejects tracked manuscript runs, agent caches, and credentials. The workflow needs no model credentials and does not make live model calls.
+
+The full test suite is discovered. On a clean GitHub runner, two optional integration checks normally report skips: the native standalone Codex configuration check and the bundled PDF-runtime check. They require locally installed runtimes that CI does not provision. The other kernel-isolation and synthetic full/segmented audit tests still run. Check the test step's log for the actual pass, failure, and skip counts; a green badge is a software-test result, not a mathematical audit.
 
 Run the test suite with Python 3.11 or newer, without generating bytecode caches:
 

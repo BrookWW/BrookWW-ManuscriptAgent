@@ -1,0 +1,61 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: macOS / Python 3.12
+    runs-on: macos-15
+    timeout-minutes: 10
+    env:
+      AUDITAGENT_SANDBOX_TESTS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Check macOS runtime and CLI entry point
+        run: |
+          python --version
+          test -x /usr/bin/sandbox-exec
+          test -x ./manuscript-agent
+          ./manuscript-agent --help
+
+      - name: Run unit, kernel-isolation, and synthetic integration tests
+        run: python -B -m unittest discover -s tests -v
+
+      - name: Check tracked files for local artifacts
+        run: |
+          python - <<'PY'
+          from pathlib import PurePosixPath
+          import subprocess
+
+          excluded = {"runs", "__pycache__", ".codex", ".agents", ".claude", ".cache", "native-rollouts"}
+          paths = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
+          unwanted = [p for p in paths if p and (
+              excluded.intersection(PurePosixPath(p).parts)
+              or p.endswith((".pyc", ".pyo", ".DS_Store"))
+              or PurePosixPath(p).name == "auth.json"
+          )]
+          if unwanted:
+              raise SystemExit("Local artifacts must not be committed: " + ", ".join(unwanted))
+          print("No manuscript runs, agent caches, or credentials are tracked.")
+          PY
