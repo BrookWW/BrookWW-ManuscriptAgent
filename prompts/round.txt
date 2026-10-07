@@ -1,0 +1,10 @@
+Read {{RESOURCE_ROOT}}/SKILL.md and audit and revise {{ENTRYPOINT}} for the scope below in this isolated round, including useful multi-agent review. Follow the skill's author goals, personal preferences, and source-delivery requirements. Work in English.
+
+Mode: {{MODE}}.
+{{SCOPE}}
+
+Final requested round: {{FINAL_ROUND}}.
+
+Optional public-source and zbMATH helper: {{PYTHON}} {{SOURCE_TOOL}} (see --help). Use permitted tools as needed.
+
+Deliver editable TeX/Bib and required manuscript assets only. PDF reading and temporary compilation checks are allowed, but compiled manuscript PDFs are not delivered. The runner records the saved files and their permanent links; describe checks honestly and do not present temporary build files as deliverables.

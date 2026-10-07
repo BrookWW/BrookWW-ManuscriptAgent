@@ -1,0 +1,10 @@
+# Keep the public source package English-only; retain the local translation.
+/README.zh-CN.md export-ignore
+
+# Defense in depth for source archives if local artifacts were ever tracked.
+/runs export-ignore
+/**/__pycache__ export-ignore
+/.codex export-ignore
+/.agents export-ignore
+/.claude export-ignore
+/.cache export-ignore

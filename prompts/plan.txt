@@ -1,0 +1,5 @@
+Read {{RESOURCE_ROOT}}/SKILL.md and its segmented-mode reference. This is the planning stage of segmented mode for {{ENTRYPOINT}}. Work in English.
+
+Read the complete manuscript and choose manageable, relatively self-contained audit blocks and their execution order. Save the short Markdown plan in .audit-work/review-plan.md using the reference's numbered headings. The number of blocks determines the audit rounds. Plan only; do not revise the manuscript or perform the audit now. The runner discards manuscript edits from this planning session.
+
+Optional public-source and zbMATH helper: {{PYTHON}} {{SOURCE_TOOL}} (see --help). Use permitted tools as needed.

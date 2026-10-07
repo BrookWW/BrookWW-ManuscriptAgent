@@ -1,0 +1,34 @@
+# Private manuscript runs and diagnostic/session archives.
+runs/
+native-rollouts/
+sessions/
+archived_sessions/
+rollout-*.jsonl
+history.jsonl
+state_*.sqlite*
+
+# Local agent configuration, credentials, and caches.
+.codex/
+.agents/
+.claude/
+.cache/
+auth.json
+.env
+.env.*
+!.env.example
+
+# Python and development caches.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+
+# Operating-system metadata.
+.DS_Store
+._*

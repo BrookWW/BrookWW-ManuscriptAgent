@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mathematical Manuscript Agent"
+  short_description: "Audit and revise research mathematics manuscripts"
+  default_prompt: "Use $mathematical-manuscript-agent to audit and revise this complete manuscript for submission to Annals of Mathematics or a comparable journal, using multi-agent review where useful, and save the complete TeX/Bib sources."

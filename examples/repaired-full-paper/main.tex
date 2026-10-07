@@ -1,0 +1,250 @@
+\documentclass[a4paper,11pt,reqno]{amsart}
+
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{amssymb,amsmath,latexsym,amsfonts,amsbsy,amsthm,mathtools,color}
+\usepackage{float}
+\usepackage[colorlinks=true,citecolor=blue,filecolor=blue,linkcolor=blue,urlcolor=blue]{hyperref}
+
+% Load subject-specific packages only when the manuscript uses them.
+
+% Canonical personal macro library, adapted from the bundled arXiv v2
+% template example. These definitions are protected by deterministic checks.
+\newcommand{\al}{\alpha}
+\newcommand{\vt}{\vartheta}
+\newcommand{\lda}{\lambda}
+\newcommand{\om}{\Omega}
+\newcommand{\pa}{\partial}
+\newcommand{\va}{\varepsilon}
+\newcommand{\ud}{\mathrm{d}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\w}{\omega}
+\newcommand{\Lda}{\Lambda}
+
+\newcommand{\A}{\mathbf{A}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\bA}{\mathbb{A}}
+\newcommand{\B}{\mathbf{B}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\CC}{\mathbf{C}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\bd}{\mathbf{d}}
+\newcommand{\bD}{\mathbb{D}}
+\newcommand{\rD}{\mathrm{D}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\e}{\mathbf{e}}
+\newcommand{\re}{\mathrm{e}}
+\newcommand{\fF}{\mathbf{F}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\bG}{\mathbb{G}}
+\newcommand{\fG}{\mathbf{G}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\rh}{\mathrm{h}}
+\newcommand{\rH}{\mathrm{H}}
+\newcommand{\bH}{\mathbb{H}}
+\newcommand{\I}{\mathbf{I}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\jj}{\mathrm{j}}
+\newcommand{\kk}{\mathrm{k}}
+\newcommand{\LL}{\mathbf{L}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\MM}{\mathbb{M}}
+\newcommand{\bM}{\mathbf{M}}
+\newcommand{\m}{\mathbf{m}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\rN}{\mathrm{N}}
+\newcommand{\n}{\mathbf{n}}
+\newcommand{\OO}{\mathbb{O}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\PP}{\mathbf{P}}
+\newcommand{\p}{\mathbf{p}}
+\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\RR}{\mathbf{R}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\Ss}{\mathbb{S}}
+\newcommand{\fS}{\mathbf{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\uu}{\mathbf{u}}
+\newcommand{\U}{\mathbf{U}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\V}{\mathbf{V}}
+\newcommand{\W}{\mathbf{W}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\cY}{\mathcal{Y}}
+
+\newcommand{\wc}{\rightharpoonup}
+\newcommand{\Sn}{\Ss^n}
+\newcommand{\HH}{\mathcal{H}}
+\newcommand{\FF}{\mathcal{F}}
+\newcommand{\vp}{\varphi}
+\newcommand{\da}{\downarrow}
+\newcommand{\T}{\mathrm{T}}
+\newcommand{\ga}{\gamma}
+\newcommand{\Ga}{\Gamma}
+\newcommand{\ep}{\epsilon}
+\newcommand{\sg}{\sigma}
+\newcommand{\ift}{\infty}
+\newcommand{\wt}{\widetilde}
+\newcommand{\wh}{\widehat}
+\newcommand{\f}{\frac}
+\newcommand{\D}{\mathrm{D}}
+\newcommand{\ol}{\overline}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\op}{\operatorname}
+\newcommand{\Sg}{\Sigma}
+\newcommand{\nn}{\nonumber}
+\newcommand{\na}{\nabla}
+\newcommand{\dint}{\displaystyle\int}
+\newcommand{\dlim}{\displaystyle\lim}
+\newcommand{\dsup}{\displaystyle\sup}
+\newcommand{\dmin}{\displaystyle\min}
+\newcommand{\dmax}{\displaystyle\max}
+\newcommand{\dinf}{\displaystyle\inf}
+\newcommand{\dsum}{\displaystyle\sum}
+
+% Delimiter enlargement uses \left and \right only.
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\inner}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\dd}{\,\mathrm{d}}
+
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\avg}{avg}
+\DeclareMathOperator{\Bad}{Bad}
+\DeclareMathOperator{\diam}{diam}
+\DeclareMathOperator{\BMO}{BMO}
+\DeclareMathOperator{\VMO}{VMO}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Meas}{Meas}
+\DeclareMathOperator{\pts}{pts}
+\DeclareMathOperator{\Lip}{Lip}
+\DeclareMathOperator{\Vol}{Vol}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator*{\osc}{osc}
+\DeclareMathOperator{\Length}{Length}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\graph}{graph}
+\DeclareMathOperator{\even}{even}
+\DeclareMathOperator{\odd}{odd}
+\DeclareMathOperator{\sing}{sing}
+\DeclareMathOperator{\reg}{reg}
+\DeclareMathOperator{\good}{good}
+\DeclareMathOperator{\bad}{bad}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\loc}{loc}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\Rei}{Rei}
+\DeclareMathOperator{\ad}{ad}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Int}{Int}
+\DeclareMathOperator{\fun}{fun}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\CN}{CN}
+\DeclareMathOperator{\HSV}{HSV}
+\DeclareMathOperator{\Center}{Center}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator*{\essinf}{ess\,inf}
+
+\setlist[enumerate,1]{label=$(\theenumi)$,ref=\theenumi,leftmargin=*}
+\numberwithin{equation}{section}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{con}[thm]{Conjecture}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{assum}[thm]{Assumption}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{example}[thm]{Example}
+\newtheorem{q}[thm]{Question}
+
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+
+\title{A sharp inequality for two real numbers}
+\author{Example Author}
+\date{}
+\begin{document}
+\begin{abstract}
+For two real numbers, the square of their sum is bounded by twice the sum of their squares, with equality precisely when the two numbers coincide. The coefficient two is the smallest constant for which this estimate holds for every pair of real numbers.
+\end{abstract}
+\subjclass[2020]{26D15}
+\keywords{Elementary inequalities, sharp constants, equality cases}
+\maketitle
+
+\section{Introduction}
+
+\subsection{Main results}
+Let $a$ and $b$ be real numbers. An optimal coefficient is a constant valid for every pair of inputs that cannot be replaced by a smaller constant.
+\begin{thm}\label{thm:sum}
+For every pair $a,b\in\R$,
+\[
+ (a+b)^2\leq 2(a^2+b^2).
+\]
+Equality holds if and only if $a=b$, and the coefficient $2$ cannot be decreased.
+\end{thm}
+
+\subsection{Related results}
+The Cauchy--Schwarz inequality for real vectors asserts
+\[
+ \abs{\inner{v}{w}}^2\leq\norm{v}^2\norm{w}^2.
+\]
+For the Euclidean inner product, the choices $v=(a,b)$ and $w=(1,1)$ recover Theorem~\ref{thm:sum}; see Axler~\cite[Theorem~6.14 and Example~6.16(a)]{axler}. The scalar proof below verifies this special case directly, including its equality condition and optimal coefficient; it makes no novelty claim.
+
+\subsection{Difficulties and strategies}
+The mixed term $2ab$ is positive when $ab>0$, so discarding it does not yield an upper bound. Instead, it must be bounded by the sum of the two individual squares.
+
+Subtracting the square of the sum from twice the sum of the squares isolates one non-negative square. Its vanishing identifies the equality case, while every non-zero equal pair tests the necessity of the coefficient.
+
+\subsection{Organization of this paper}
+Section~\ref{sec:preliminaries} supplies the elementary sign fact needed for the estimate. Section~\ref{sec:proof} establishes the inequality, equality condition, and optimal coefficient.
+
+\section{Preliminaries}\label{sec:preliminaries}
+The order on the real numbers controls the sign of a square.
+\begin{lem}\label{lem:square}
+For every $x\in\R$, one has $x^2\geq0$, with equality if and only if $x=0$.
+\end{lem}
+\begin{proof}
+If $x>0$, multiplication by $x$ yields $x^2>0$.
+If $x<0$, then $-x>0$, so the positive case yields $x^2=(-x)^2>0$.
+If $x=0$, then $x^2=0$. These three cases prove non-negativity and show that equality holds exactly when $x=0$.
+\end{proof}
+
+\section{The sharp estimate}\label{sec:proof}
+The square of the difference controls the mixed term in the desired estimate.
+\begin{proof}[Proof of Theorem~\ref{thm:sum}]
+For arbitrary $a,b\in\R$, expansion and Lemma~\ref{lem:square} yield
+\[
+ 2(a^2+b^2)-(a+b)^2=a^2-2ab+b^2=(a-b)^2\geq0.
+\]
+Rearranging proves the desired inequality. By the equality statement of the lemma, the difference vanishes if and only if $a-b=0$, which is equivalent to $a=b$.
+
+To prove optimality, suppose that a real constant $C$ satisfies $(a+b)^2\leq C(a^2+b^2)$ for every real pair $a,b$. Taking $a=b=1$ yields $4\leq2C$, hence $C\geq2$. Since the inequality already proved holds with coefficient $2$, this coefficient is optimal.
+\end{proof}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
