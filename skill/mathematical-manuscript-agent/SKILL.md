@@ -1,6 +1,6 @@
 ---
 name: mathematical-manuscript-agent
-description: "Audit, repair, and rewrite complete English mathematics manuscripts for authors targeting Annals of Mathematics or comparable journals, with collaborative review and complete TeX/Bib delivery. Use for manuscript-scale work, not isolated exercises."
+description: "Audit, repair, and rewrite complete mathematics manuscripts for authors targeting Annals of Mathematics or comparable journals, with collaborative review and complete TeX/Bib delivery. Use for manuscript-scale work, not isolated exercises."
 ---
 
 # Mathematical Manuscript Agent
@@ -33,7 +33,8 @@ Default to **full** mode: each round audits, revises, and reviews the whole pape
 For **segmented** mode, read [the mode guide](references/segmented-review.md).
 Its planning stage chooses the blocks; each audit round then covers the assigned
 block and relevant dependencies. The shared guidance below applies within that
-scope. Work in English, including plans and final reports.
+scope. Preserve the manuscript's existing language; the interface language does
+not request a translation. Write plans and final reports in English.
 
 ## Audit and revise
 
@@ -85,8 +86,9 @@ current round's access boundary.
 
 ## Writing for the intended readers
 
-Write precise, economical English. Make the contribution and architecture of
-the proof easy to understand while preserving the detail needed to check it.
+Write precise, economical prose in the manuscript's existing language. Make the
+contribution and architecture of the proof easy to understand while preserving
+the detail needed to check it.
 Balance prose with inline and displayed mathematics according to the needs of
 each argument, so that readers can follow the reasoning and referees can verify
 its steps without unnecessary verbosity or excessive symbolic compression.

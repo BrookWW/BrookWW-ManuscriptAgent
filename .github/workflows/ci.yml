@@ -38,9 +38,18 @@ jobs:
           test -x /usr/bin/sandbox-exec
           test -x ./manuscript-agent
           ./manuscript-agent --help
+          test -x './Start ManuscriptAgent.command'
+          test -x './启动 ManuscriptAgent.command'
+          python -B gui.py --help
 
       - name: Run unit, kernel-isolation, and synthetic integration tests
         run: python -B -m unittest discover -s tests -v
+
+      - name: Check bilingual interface
+        run: |
+          node --version
+          node --check ui/app.js
+          node --test tests/test_ui_i18n.js
 
       - name: Check tracked files for local artifacts
         run: |
@@ -48,12 +57,16 @@ jobs:
           from pathlib import PurePosixPath
           import subprocess
 
-          excluded = {"runs", "__pycache__", ".codex", ".agents", ".claude", ".cache", "native-rollouts"}
+          excluded = {"runs", "__pycache__", ".codex", ".agents", ".claude", ".cache", "native-rollouts", "sessions", "archived_sessions"}
           paths = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
           unwanted = [p for p in paths if p and (
               excluded.intersection(PurePosixPath(p).parts)
               or p.endswith((".pyc", ".pyo", ".DS_Store"))
               or PurePosixPath(p).name == "auth.json"
+              or PurePosixPath(p).name in {"history.jsonl", ".env"}
+              or (PurePosixPath(p).name.startswith(".env.") and PurePosixPath(p).name != ".env.example")
+              or (PurePosixPath(p).name.startswith("rollout-") and p.endswith(".jsonl"))
+              or (PurePosixPath(p).name.startswith("state_") and ".sqlite" in p)
           )]
           if unwanted:
               raise SystemExit("Local artifacts must not be committed: " + ", ".join(unwanted))

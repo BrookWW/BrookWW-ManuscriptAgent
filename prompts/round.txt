@@ -1,4 +1,4 @@
-Read {{RESOURCE_ROOT}}/SKILL.md and audit and revise {{ENTRYPOINT}} for the scope below in this isolated round, including useful multi-agent review. Follow the skill's author goals, personal preferences, and source-delivery requirements. Work in English.
+Read {{RESOURCE_ROOT}}/SKILL.md and audit and revise {{ENTRYPOINT}} for the scope below in this isolated round, including useful multi-agent review. Follow the skill's author goals, personal preferences, and source-delivery requirements. Preserve the manuscript's existing language. Write the final report in English.
 
 Mode: {{MODE}}.
 {{SCOPE}}

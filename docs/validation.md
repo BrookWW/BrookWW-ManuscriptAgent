@@ -1,5 +1,32 @@
 # Validation
 
+## Bilingual local interface — 2026-10-10
+
+```sh
+AUDITAGENT_SANDBOX_TESTS=1 python3.12 -B -m unittest discover -s tests -q
+node --test tests/test_ui_i18n.js
+```
+
+Result: **244 Python tests passed, no skips**, including the macOS kernel-isolation,
+loopback API, and synthetic full/segmented workflow tests. **10 JavaScript tests
+passed**, checking language selection, catalog coverage, interpolation, and UI
+translation references. CLI help, GUI help, launcher shell syntax, and JavaScript
+syntax checks also passed. These checks used synthetic manuscripts and fake model
+sessions; no live model review was started.
+
+A headless Chrome check exercised English/Chinese switching with filled fields,
+per-stage overrides and expanded controls, legacy JSON import, language-aware
+export, switching during a simulated active run, unchanged raw logs, and stored
+preferences after reload. Both languages fit a 390-pixel viewport without
+horizontal page overflow. The two README screenshots were captured with an empty
+form and synthetic local defaults, then visually inspected.
+
+The source package includes both READMEs, both launchers, and the interface assets.
+The former Chinese README export exclusion is removed. Publication uses an
+explicit source-file list; local run outputs, session archives, caches, and
+credentials are excluded. These software checks do not verify live model behavior
+or mathematical correctness.
+
 ## Publication verification — 2026-10-07
 
 ```sh
@@ -104,3 +131,22 @@ The skill passed `quick_validate.py`, and all its relative reference links resol
 Limitations: the fake CLI verifies orchestration, not real model instruction-following or mathematical quality. No complete live manuscript audit was run. The OS sandbox protects local round boundaries, not server-side model state or information deliberately included in deliverable sources. A descendant that detaches from the original process group may outlive group cleanup while retaining its old sandbox restrictions; this is not VM-level process teardown. Authentication changes inside a round are intentionally not carried forward.
 
 The pre-change working source, including uncommitted edits, was saved at `../backups/ManuscriptAgent-before-thin-20260930.tar.gz` relative to the repository root. Git internals, run outputs and Python caches were excluded.
+
+## Local graphical workflow validation (2026-10-08)
+
+- `python3 -m unittest discover -s tests -q`: 237 tests, 219 passed,
+  18 skipped under the default environment; no failures.
+- `AUDITAGENT_SANDBOX_TESTS=1 python3 -m unittest discover -s tests -p test_thin_integration.py -q`:
+  all 3 real macOS isolation tests passed separately with synthetic CLI output.
+- New workflow tests use real synthetic subprocesses to cover arbitrary mode order,
+  adjacent full stages, segmented multi-pass planning, inherited/overridden parameters,
+  nested entry paths and explicit assets, stop-on-failure, cancellation, callback failures,
+  and startup validation. The HTTP integration test executes segmented two passes followed
+  by a full stage through the GUI API and verifies the original remains unchanged.
+- Actual local-browser interaction verified copy/delete/count editing, button reordering,
+  native drag reordering, required-input validation, JSON download and re-import. Screenshot:
+  [local interface](local-ui.jpg).
+- Native manuscript selection calls the macOS file chooser, but automated desktop control
+  could not inspect that dialog in this environment. Complete picker selection and live
+  model review were not verified. Absolute-path input and model-free runner integration
+  were verified. No mathematical workload or existing output was modified.

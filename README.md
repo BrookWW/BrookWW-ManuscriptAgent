@@ -1,21 +1,19 @@
 # ManuscriptAgent
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 [![Tests](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml/badge.svg)](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml)
 
-Audit and revise mathematical LaTeX manuscripts through fresh, isolated Codex sessions. ManuscriptAgent supports repeated full-paper reviews and a model-planned segmented review, saving an editable source revision after every completed audit round.
+Review and revise mathematical LaTeX manuscripts through fresh, isolated Codex sessions. The local browser interface lets you arrange full-paper rounds and segmented passes into a workflow, follow its progress, and collect editable source revisions. The interface and operating messages are available in English and Simplified Chinese. Manuscripts retain their original language.
 
-The bundled [mathematical manuscript skill](skill/mathematical-manuscript-agent/SKILL.md) handles mathematical reasoning, literature research, rewriting, and subagent review when useful. The Python runner handles dependency collection, session isolation, round scheduling, and delivery. Original manuscript files are preserved.
-
-The skill targets the standards of Annals of Mathematics or comparable journals. Its [style preferences](skill/mathematical-manuscript-agent/references/personal-style.md) and LaTeX template reflect author preferences, not official journal requirements. A completed run is not a certificate of mathematical correctness or publication readiness.
+The bundled [mathematical manuscript skill](skill/mathematical-manuscript-agent/SKILL.md) handles mathematical reasoning, literature research, rewriting, and subagent review when useful. The Python runner collects dependencies, isolates sessions, schedules reviews, and saves results without changing the original files. Its editorial target is Annals of Mathematics or comparable journals; the [style preferences](skill/mathematical-manuscript-agent/references/personal-style.md) and template are author preferences, not official journal requirements. Completed execution does not certify mathematical correctness or publication readiness.
 
 ## Requirements and setup
 
-- **macOS** with `sandbox-exec`. There is no unconfined fallback or Linux/Windows execution mode.
-- **Python 3.11 or newer**. The core runner uses the Python standard library.
-- **Codex CLI**, installed and authenticated with the standard OpenAI provider and a regular `auth.json` file in its configured Codex home. Keychain-only authentication and custom model providers are not supported.
-- Access to the model and reasoning effort you select.
-
-Clone the repository, open its directory, and check the launcher:
+- macOS with `sandbox-exec`. Linux, Windows, and execution without the sandbox are not supported.
+- Python 3.11 or newer. The runner and local interface use the Python standard library; no web framework installation is needed.
+- Codex CLI, installed and authenticated with the standard OpenAI provider and a regular `auth.json` file in its configured Codex home. Keychain-only authentication and custom model providers are not supported.
+- Access to the model and reasoning effort selected for the run.
 
 ```sh
 git clone https://github.com/BrookWW/BrookWW-ManuscriptAgent.git ManuscriptAgent
@@ -23,33 +21,81 @@ cd ManuscriptAgent
 ./manuscript-agent --help
 ```
 
-The launcher selects an available Python 3.11+ interpreter. Use `--codex /absolute/path/to/codex` if Codex is not available on `PATH`.
+The launchers look for Python 3.11+. If Codex is not on `PATH`, enter its absolute executable path in the interface's advanced settings or pass `--codex` to the CLI.
 
-A TeX installation is optional: final delivery consists of source files and required assets, without an exported manuscript PDF. PDF reading tools are also optional external dependencies. The runner can use supported system/Homebrew Poppler tools, a known bundled Poppler runtime, or the bundled Python PDF text extractor when available. It skips unsupported tool locations without expanding filesystem access.
+A TeX installation is optional. Delivery contains TeX/Bib sources and required assets, without a compiled manuscript PDF. Optional PDF reading tools are external dependencies: the runner can use supported system/Homebrew Poppler tools, a known bundled Poppler runtime, or the bundled Python text extractor when available. Unsupported tool locations are skipped without expanding filesystem access.
 
-## Quick start
+## Local browser interface
 
-Run three full-paper audit-and-revision rounds:
+In Finder, double-click `Start ManuscriptAgent.command` for English or `启动 ManuscriptAgent.command` for Chinese. Keep the launcher's terminal window open while the task runs. The interface listens only on `127.0.0.1` and uses a random session token; it is a local service.
+
+![English interface](docs/local-ui-en.png)
+
+### Choose a language
+
+Use the language selector at the top to switch between English and 中文. Switching updates labels, controls, progress messages, and operating messages without clearing the manuscript path or workflow settings. It does not translate the manuscript. Raw runner logs, model responses, and model-generated reports retain their original language. The workflow summary uses the language saved when the run starts.
+
+The English and Chinese launchers select their respective initial languages. You can also start the interface directly:
 
 ```sh
-./manuscript-agent /absolute/path/to/main.tex \
-  --mode full \
-  --rounds 3 \
-  --model gpt-6.1-sol \
-  --reasoning xhigh
+python3 gui.py --language en
+python3 gui.py --language zh-CN
 ```
 
-Results are saved under this repository's `runs/<timestamp>-<id>/` directory. Full mode is the default. In full mode, omitting `--rounds` prompts for the count at the terminal.
+Without `--language`, the interface first uses a language choice stored by the browser for that local address, then the browser language: Chinese selects `zh-CN`; other languages select `en`. Browser storage is scoped to the origin, including its port. The launcher normally chooses a free port, so a later launch may not share the earlier preference. `--port 8765` selects a fixed port; `--no-browser` prints the address without opening a browser.
 
-The model and reasoning effort in these examples are explicit choices, not hard-coded requirements. If omitted, they are read from your local Codex configuration; reasoning falls back to `high` if it is not configured. A model must be specified either in the command or in that configuration.
+### Set up a review
 
-## Recommended workflow: 3–4 full rounds, then one segmented pass
+1. Select the entry `.tex` file or paste its absolute path. For an entry nested within a larger project, set the actual project root under advanced settings. Add dependencies that TeX discovery cannot find, one path per line.
+2. Add full or segmented stages in any order. Duplicate or delete stages, drag them by the handle, or use the up/down buttons. The initial workflow of three full rounds, one segmented pass, and one full round is an editable example, not a validated optimum.
+3. Choose global model, reasoning effort, and session timeout values. Blank model and reasoning fields inherit the local Codex configuration. Each stage can override the global model, reasoning effort, and session timeout.
+4. Leave the output field empty to create a new directory under `runs/`, or specify a directory that does not yet exist. Selecting a parent folder fills in a new child directory name.
+5. Start the review. The run's configuration is locked while it is active. Progress shows the current stage and round or block; the block total appears only after segmented planning succeeds. Use the report and folder buttons to inspect saved results.
 
-Begin with **three or four full-paper rounds** to review and revise the manuscript as a whole. Then run **one complete segmented pass** on the latest saved sources to examine focused blocks in detail. This is a recommended workflow, not an empirically established optimal number of reviews.
+| Stage mode | Meaning of its count | Session sequence |
+|---|---|---|
+| Full (`full`) | Number of complete-paper review rounds | One fresh audit session per round |
+| Segmented (`segmented`) | Number of complete passes through the paper | Each pass starts a fresh planning session, then one fresh audit session per planned block |
 
-### 1. Full-paper review
+Every audit receives the latest complete source bundle and saves a new revision on success. The workflow hands dependencies and nested entry paths between stages through actual revision directories. A failure stops the remaining stages.
 
-Choose a new output directory so the second stage has a stable input path:
+For a segmented pass, the model chooses the blocks and their order. The plan stays fixed during that pass; planner edits to the manuscript are discarded. Each block session receives the complete manuscript, the read-only plan, and its assigned scope. It may consult other passages and repair directly affected material. Another pass creates a new plan. A full-paper review runs afterward only if you add a full stage. See the [segmented review guide](skill/mathematical-manuscript-agent/references/segmented-review.md).
+
+### Save and reuse workflows
+
+The save/load controls export and import JSON configuration. You can also load a completed or interrupted run's `workflow.json`; the interface reads its `config` field. Loading a configuration with a language setting also changes the interface language. Check local file paths, stage counts, and the output directory before starting a new run.
+
+A minimal configuration can use your local model defaults:
+
+```json
+{
+  "language": "en",
+  "input": "/absolute/path/to/project/main.tex",
+  "project_root": "/absolute/path/to/project",
+  "assets": [],
+  "stages": [
+    {"mode": "full", "count": 3},
+    {"mode": "segmented", "count": 1},
+    {"mode": "full", "count": 1}
+  ]
+}
+```
+
+Optional global fields are `model`, `reasoning`, `timeout`, `build_timeout`, `codex`, and `output`. Stage overrides are `model`, `reasoning`, and `timeout`. Session timeout defaults to `7200` seconds; source-PDF text extraction defaults to `180` seconds. A model must be supplied globally, per stage, or in local Codex configuration. JSON field names and mode values stay the same in both interface languages.
+
+### Stop and continue
+
+Closing the browser leaves the task running. Stopping the run requests an interruption and waits for the isolated runner to clean up. Exiting the launcher also requests cancellation. Forced termination or power loss cannot guarantee cleanup. Completed revisions remain available.
+
+After a failed or cancelled run that saved at least one audit revision, the continue control loads the last completed manuscript and the remaining stages for editing. Starting again creates a new run and repeats the entire current stage, including its configured rounds or passes. It does not restore the interrupted model session or automatically subtract completed rounds. Adjust the stage counts before restarting if needed.
+
+After restarting the local service, load the saved `workflow.json`, set the input to `last_revision/last_entry`, and set the project root to `last_revision`. Keep the stages you want to run and choose a new output directory. If no audit revision was completed, start from the original source. Loading a saved configuration alone does not resume execution.
+
+## Command-line use
+
+The CLI runs one full stage or one segmented pass at a time. It keeps its existing English command help and logs; the interface language setting is not a manuscript CLI option.
+
+Three complete-paper audit-and-revision rounds:
 
 ```sh
 ./manuscript-agent /absolute/path/to/main.tex \
@@ -60,11 +106,7 @@ Choose a new output directory so the second stage has a stable input path:
   --output /absolute/path/to/audits/paper-full
 ```
 
-For four rounds, change `--rounds 3` to `--rounds 4`. Every round receives the latest complete manuscript sources in a fresh session, audits the whole paper, and saves a new source revision when it completes successfully.
-
-### 2. One complete segmented pass
-
-After the three-round run finishes, review its final report and start the segmented run from its third revision:
+To follow that run with one segmented pass, use its last completed revision:
 
 ```sh
 ./manuscript-agent /absolute/path/to/audits/paper-full/revisions/round-0003/main.tex \
@@ -74,17 +116,32 @@ After the three-round run finishes, review its final report and start the segmen
   --output /absolute/path/to/audits/paper-segmented
 ```
 
-If you ran four full rounds, use `revisions/round-0004/main.tex` instead. Replace `main.tex` with your actual entry filename, retaining any subdirectory layout. If the entry is nested within a larger project, also set `--project-root` to the corresponding revision directory and repeat any required `--asset` options.
+Replace `main.tex` with the actual entry path. For a nested entry, set `--project-root` to the corresponding revision directory and repeat any necessary `--asset` options. Use an actual revision directory when continuing; do not use the `current` symlink as a project root. Both output directories must be new.
 
-**Do not add `--rounds 1` to the segmented command.** In segmented mode, one pass means executing the entire model-selected plan once. A separate planning session chooses the blocks and their order; the runner then starts one fresh audit session per block. `--rounds` is incompatible with segmented mode. For example, a five-block plan produces one planning session and five audit sessions.
+Do not pass `--rounds` in segmented mode. One CLI invocation executes the entire plan once, so a five-block plan creates one planning session and five audit sessions. Use separate invocations or the graphical workflow for multiple passes.
 
-The plan is saved as `review-plan.md`. Each block session receives the latest complete manuscript, the read-only plan, and its assigned scope. It may consult other passages and repair directly affected material. Planner edits to the manuscript are discarded. The plan stays fixed throughout the run, and the runner does not automatically append a full-paper review. See the [segmented review guide](skill/mathematical-manuscript-agent/references/segmented-review.md).
+Full mode is the default. Omitting `--rounds` in that mode prompts for a count at the terminal. The example model and reasoning effort are explicit choices, not requirements. If omitted, they come from local Codex configuration; reasoning falls back to `high`. A model must be provided by the command or local configuration.
 
-Both output directories must be new. For another attempt, choose new directory names or omit `--output` to get automatically generated names. Use an actual revision directory when continuing; do not use the `current` symlink as a project root.
+| Option | Meaning |
+|---|---|
+| `input` | Entry `.tex` file |
+| `--mode full` | Audit the complete paper each round; default mode |
+| `--rounds N` | Exact positive audit-round count in full mode only |
+| `--mode segmented` | Plan blocks, then audit each block once |
+| `--project-root PATH` | LaTeX working directory; defaults to the entry directory |
+| `--asset PATH` | Extra dependency; repeatable, relative to the root or absolute within it |
+| `--output PATH` | New run directory; defaults to `runs/<timestamp>-<id>/` |
+| `--model NAME` | Override the locally configured model |
+| `--reasoning LEVEL` | Override the locally configured reasoning effort |
+| `--timeout SECONDS` | Maximum per Codex session, including planning; default `7200` |
+| `--build-timeout SECONDS` | Maximum per source-PDF text extraction; default `180` |
+| `--codex PATH` | Codex executable; default `codex` |
 
-## Multi-file manuscripts and assets
+The session timeout is not a total-run budget. More rounds or planned blocks can increase runtime and model usage. Segmented review does not guarantee lower token use, lower cost, or better mathematical findings.
 
-`--project-root` sets the LaTeX working directory and the boundary for manuscript dependencies. It defaults to the entry file's directory. Dependencies are discovered from the TeX source and retain their project-relative layout. Use repeatable `--asset` options for required files whose paths cannot be discovered, such as macro-generated asset references:
+## Multi-file manuscripts and dependencies
+
+The project root defines the LaTeX working directory and dependency boundary. Discovered dependencies retain their project-relative layout. Set extra assets for required files whose references cannot be discovered, such as macro-generated paths:
 
 ```sh
 ./manuscript-agent /absolute/path/to/project/paper/main.tex \
@@ -92,84 +149,80 @@ Both output directories must be new. For another attempt, choose new directory n
   --asset figures/diagram.pdf \
   --asset tables/results.tex \
   --mode full \
-  --rounds 3 \
-  --model gpt-6.1-sol \
-  --reasoning xhigh
+  --rounds 3
 ```
 
-Here, asset paths are relative to `--project-root`. Only add manuscript dependencies: explicitly supplied assets are carried into subsequent rounds.
+The same paths can be entered in the interface's advanced settings. Explicit assets must remain inside the project root and are carried forward through subsequent rounds and stages. Only include manuscript dependencies.
 
-Referenced `.bib` files are included automatically. If the manuscript has no external bibliography references, the skill still supplies `references.bib` at the working root; that file may be empty. Unrelated bibliography files, downloads, review notes, caches, and logs are not passed to the next round.
+Referenced `.bib` files are included automatically. If the manuscript has no external bibliography references, the skill still supplies `references.bib` at the working root; it may be empty. Unrelated bibliography files, downloads, review notes, caches, and logs are not passed forward.
 
-## Command-line options
+## Output files
 
-| Option | Meaning |
+For a graphical workflow, the top-level output contains:
+
+| Path | Contents |
 |---|---|
-| `input` | Entry `.tex` file |
-| `--mode full` | Audit the complete paper in each round; default mode |
-| `--rounds N` | Exact positive audit-round count in full mode only |
-| `--mode segmented` | Plan blocks, then audit each block once in its own session |
-| `--project-root PATH` | LaTeX working directory; defaults to the entry directory |
-| `--asset PATH` | Required additional dependency; repeatable, relative to the project root or absolute within it |
-| `--output PATH` | New run directory; defaults to `runs/<timestamp>-<id>/` |
-| `--model NAME` | Override the locally configured Codex model |
-| `--reasoning LEVEL` | Override the locally configured reasoning effort |
-| `--timeout SECONDS` | Maximum time per Codex session, including planning; default `7200` |
-| `--build-timeout SECONDS` | Maximum time per source-PDF text extraction; default `180` |
-| `--codex PATH` | Codex executable; default `codex` |
+| `workflow.json` | Saved configuration, stage results, status, and last completed revision/entry |
+| `report.md` | Workflow summary in the saved run language, with links to stage results and round reports |
+| `stage-NNN-pass-NNN.log` | Raw output from that runner invocation |
+| `stage-NNN-pass-NNN/` | One full-stage run or one segmented-pass run |
 
-The session timeout is not a total-run budget. More audit rounds or planned blocks can increase total runtime and model usage. Segmented review does not guarantee a lower token count, lower cost, or better mathematical findings.
+Each stage/pass directory, or a standalone CLI output directory, contains:
 
-## Outputs and recovery
-
-| Path inside a run | Contents |
+| Path | Contents |
 |---|---|
-| `deliverables/` | Final complete TeX/Bib sources and required assets after all rounds succeed; no compiled manuscript PDF |
-| `revisions/round-0000/` | Original input source bundle |
-| `revisions/round-NNNN/` | Complete sources saved after each successful audit round |
+| `deliverables/` | Complete TeX/Bib sources and required assets after that runner finishes successfully; no compiled manuscript PDF |
+| `revisions/round-0000/` | Input source bundle for that runner |
+| `revisions/round-NNNN/` | Complete source bundle after each successful audit round |
 | `current` | Symlink to the latest saved revision |
-| `archive/round-NNNN/outcome.txt` | Round report, including a runner-generated list of files actually saved |
+| `archive/round-NNNN/outcome.txt` | Round report and runner-generated list of files actually saved |
 | `archive/round-NNNN/` | Execution logs, isolation preflight, and available multi-agent diagnostics |
-| `review-plan.md` | Segmented mode only: model-selected block schedule |
-| `archive/planning/` | Segmented mode only: planning logs, report, preflight, and diagnostics |
-| `run.json` | Mode, round counts, status, entry path, and any execution error |
+| `review-plan.md` | Segmented mode's block schedule |
+| `archive/planning/` | Segmented planning logs, report, preflight, and diagnostics |
+| `run.json` | Mode, counts, status, entry path, and any execution error |
 
-Reports identify the delivered files and rewrite local links to their saved revisions when possible. Links to unsaved temporary material are marked as not delivered. The runner-generated saved-file list is authoritative; a model's delivery claim alone is not.
+The final manuscript of a successful workflow is in the last stage/pass directory's `deliverables/`. The workflow does not create another top-level `deliverables/`. `workflow.json` also records the latest completed revision for recovery.
 
-A failed model session, timeout, interruption, missing TeX/Bib output, or unsafe dependency prevents that round from being counted. Earlier completed revisions remain available, and failed work is preserved where it can be read safely. Inspect `run.json` and that round's archive, then start a new run from the last completed revision. `deliverables/` is exported only after all requested audit rounds finish successfully.
+Reports rewrite local file links to saved revisions where possible; links to unsaved temporary files are marked as not delivered. The runner's saved-file list is authoritative, rather than a model's delivery claim alone.
 
-Full mode runs the exact requested number of rounds even when a completed round makes no changes. In segmented mode, the planner is not counted as an audit round. Invalid or unreadable plans stop the run before auditing; the plan's syntax is checked, but its mathematical decomposition is not certified.
+A failed session, timeout, interruption, missing TeX/Bib output, or unsafe dependency prevents that round from counting. Earlier completed revisions remain available, and failed work is preserved where it can be read safely. Each runner exports `deliverables/` only after all its requested audits succeed. Full mode runs the exact requested count even if a round changes nothing. Segmented planning is not an audit round; invalid or unreadable plans stop the runner before auditing. Plan syntax checks do not certify the mathematical decomposition.
 
-## Isolation, local data, and review limits
+## Isolation and local data
 
-Every planning or audit session has its own writable manuscript copy, private home, Codex state, and temporary directory. A macOS Seatbelt preflight checks the boundary before the model starts. Earlier archives, the original project, and unrelated user files are denied. The fixed skill, configuration, and review plan are read-only. Previous conversations, memories, plugins, and host bridges are not loaded; native subagents inherit the same session boundary.
+Isolation applies to each execution session across both modes. Every planning or audit session receives a writable manuscript copy, private home, Codex state, and temporary directory. A macOS Seatbelt preflight checks access boundaries before the model starts. The original project, earlier archives, and unrelated user files are denied; the fixed skill, configuration, and review plan are read-only. Previous conversations, memories, plugins, and host bridges are not loaded.
 
-Model traffic uses a fixed-destination OpenAI relay. Optional literature downloads use an authenticated HTTPS broker with public-address and redirect checks. The relay restricts network destinations, not HTTP origins behind shared CDN addresses. Some macOS system/runtime files and required preferences services remain shared. The runner does not provide a virtual machine or isolation from model/server-side state, and text deliberately placed in the manuscript carries forward with it.
+Subagents within the same session share that session's sandbox and do not have separate file-permission boundaries. Across sessions and mode changes, the latest manuscript and its dependencies carry forward; conversation history and audit archives do not. Text deliberately written into the manuscript carries forward with it.
 
-Trusted startup credentials are copied separately into each session. Agent-written authentication changes are not passed to later sessions or written back to the user's login. If authentication expires, log in again and restart from a completed revision. After each session the runner terminates its process group, closes proxies, and removes private directories. A deliberately detached descendant may outlive its original process group while remaining subject to its original sandbox restrictions.
+Model traffic uses a fixed-destination OpenAI relay. Optional literature downloads use an authenticated HTTPS broker with public-address and redirect checks. The relay restricts network destinations, not HTTP origins behind shared CDN addresses. Some macOS system/runtime files and required preferences services remain shared. This is not a virtual machine, and it does not isolate model/server-side state.
 
-Run archives can contain manuscript text, model responses, and native session logs. Keep them private. The repository excludes `runs/`, agent state, and caches from version control; do not force-add generated archives. Custom `--output` directories outside `runs/` also need to remain outside published source control or be explicitly ignored.
+Trusted startup credentials are copied separately into each session. Agent-written authentication changes are neither passed forward nor written back to the user's login. If authentication expires, log in again and restart from a completed revision. After each session, the runner terminates its process group, closes proxies, and removes private directories. A deliberately detached descendant may outlive that process group while retaining its original sandbox restrictions.
 
-The best-effort multi-agent observer saves available session JSONL files and `agent-diagnostics.json` in each session's archive before cleanup. It records evidence of agent creation, execution, completion, and result receipt. Observation is bounded and informational: missing or partial logs do not prove that collaboration was absent, and observed collaboration does not certify mathematical quality. Authentication files and the entire private Codex home are not archived by this observer. Diagnostic archives are not passed to later rounds.
+Archives may contain manuscript text, model responses, and native session logs. Keep them private. `runs/`, agent state, and caches are excluded from version control; do not force-add them. Custom output locations must also remain outside published source control or be explicitly ignored. Runtime outputs are not part of the source release.
 
-The runner verifies orchestration and safe source delivery. Mathematical conclusions, reference accuracy, completeness of proofs, and adherence to editorial instructions still require human review.
+The best-effort multi-agent observer saves available session JSONL files and `agent-diagnostics.json` before cleanup. These records can show agent creation, execution, completion, and result receipt. Missing or partial logs do not establish that collaboration was absent, and observed collaboration does not certify mathematical quality. The observer does not archive authentication files or the complete private Codex home. Diagnostics are not passed to later sessions.
 
 ## Development and validation
 
-The [Tests workflow](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml) runs on every push and pull request, and can also be started manually from the Actions tab. It uses macOS 15 and Python 3.12, enables real kernel-isolation tests, checks the executable launcher, and rejects tracked manuscript runs, agent caches, and credentials. The workflow needs no model credentials and does not make live model calls.
-
-The full test suite is discovered. On a clean GitHub runner, two optional integration checks normally report skips: the native standalone Codex configuration check and the bundled PDF-runtime check. They require locally installed runtimes that CI does not provision. The other kernel-isolation and synthetic full/segmented audit tests still run. Check the test step's log for the actual pass, failure, and skip counts; a green badge is a software-test result, not a mathematical audit.
-
-Run the test suite with Python 3.11 or newer, without generating bytecode caches:
+Run the test suite with Python 3.11 or newer:
 
 ```sh
 python3 -B -m unittest discover -s tests -v
 ```
 
-To include macOS kernel-isolation tests:
+Include macOS kernel-isolation tests with:
 
 ```sh
 AUDITAGENT_SANDBOX_TESTS=1 python3 -B -m unittest discover -s tests -v
 ```
 
-Kernel tests require permission to invoke `sandbox-exec` and bind local loopback sockets. Tests use synthetic manuscripts and fake model sessions; they do not run a live mathematical audit. See the [validation notes](docs/validation.md) for recorded results and limitations.
+Kernel tests need permission to invoke `sandbox-exec` and bind local loopback sockets. Tests use synthetic manuscripts and fake model sessions, without a live mathematical audit.
+
+The interface tests require Node.js 18 or newer, with no npm installation. Node.js is only a development-test dependency:
+
+```sh
+node --test tests/test_ui_i18n.js
+```
+
+The [Tests workflow](https://github.com/BrookWW/BrookWW-ManuscriptAgent/actions/workflows/ci.yml) runs on pushes and pull requests and can be started manually. It uses macOS 15 and Python 3.12, runs the Python and Node.js suites, enables kernel-isolation tests, checks the launchers, and rejects tracked run outputs, agent caches, and credentials. It needs no model credentials or live model calls. Optional checks can skip when locally bundled runtimes are unavailable; consult the run log for actual pass, failure, and skip counts.
+
+See the [validation notes](docs/validation.md) for dated records and their limitations. Passing software tests verifies orchestration and source delivery; mathematical conclusions, reference accuracy, proof completeness, and editorial compliance require human review.

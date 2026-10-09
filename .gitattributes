@@ -1,5 +1,4 @@
-# Keep the public source package English-only; retain the local translation.
-/README.zh-CN.md export-ignore
+# Include both English and Chinese documentation in source archives.
 
 # Defense in depth for source archives if local artifacts were ever tracked.
 /runs export-ignore
